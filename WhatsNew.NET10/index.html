@@ -9,49 +9,32 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Editor-inspired dark theme */
             --bg-primary: #0a0a0f;
             --bg-secondary: #11111a;
             --bg-tertiary: #1a1a24;
             --bg-code: #0d0d14;
-
-            /* Accent colors - syntax highlighting inspired */
             --accent-blue: #5fb3d9;
             --accent-green: #9ecd6f;
             --accent-orange: #dbb872;
             --accent-pink: #d4a5e5;
             --accent-red: #e06c75;
-
-            /* Text colors */
             --text-primary: #e0e0e8;
             --text-secondary: #8b8b9e;
             --text-muted: #5a5a6a;
-
-            /* Status colors */
             --status-available: #9ecd6f;
             --status-coming: #dbb872;
-
-            /* Spacing */
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-code: rgba(95, 179, 217, 0.2);
             --space-xs: 0.25rem;
             --space-sm: 0.5rem;
             --space-md: 1rem;
             --space-lg: 2rem;
             --space-xl: 4rem;
-
-            /* Border */
-            --border-subtle: rgba(255, 255, 255, 0.06);
-            --border-code: rgba(95, 179, 217, 0.2);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Newsreader', Georgia, serif;
@@ -61,14 +44,10 @@
             overflow-x: hidden;
         }
 
-        /* Subtle grid background */
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-image:
                 linear-gradient(var(--border-subtle) 1px, transparent 1px),
                 linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
@@ -125,8 +104,7 @@
         }
 
         .logo-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             background: var(--accent-green);
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
@@ -186,12 +164,23 @@
             align-items: center;
             gap: var(--space-sm);
             color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .meta-item:hover {
+            color: var(--accent-blue);
+        }
+
+        .meta-item:hover .meta-dot {
+            transform: scale(1.3);
         }
 
         .meta-dot {
-            width: 6px;
-            height: 6px;
+            width: 6px; height: 6px;
             border-radius: 50%;
+            transition: transform 0.3s ease;
         }
 
         .meta-dot.available { background: var(--status-available); }
@@ -199,8 +188,36 @@
 
         /* Section */
         section {
-            padding: var(--space-xl) 0;
+            padding: var(--space-lg) 0;
             border-top: 1px solid var(--border-subtle);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            padding: var(--space-md) 0;
+        }
+
+        .section-header:hover .section-title {
+            color: var(--accent-blue);
+        }
+
+        .section-header:hover .expand-icon {
+            transform: rotate(90deg);
+        }
+
+        .expand-icon {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            margin-right: var(--space-md);
+            transition: transform 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(90deg);
         }
 
         .section-label {
@@ -209,24 +226,25 @@
             text-transform: uppercase;
             letter-spacing: 0.2em;
             color: var(--text-muted);
-            margin-bottom: var(--space-md);
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-        }
-
-        .section-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-subtle);
+            margin-bottom: var(--space-sm);
         }
 
         .section-title {
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-size: clamp(1.5rem, 3vw, 2rem);
             font-weight: 400;
-            margin-bottom: var(--space-lg);
-            letter-spacing: -0.01em;
+            transition: color 0.3s ease;
+        }
+
+        .section-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .section-content.collapsed {
+            max-height: 0;
+            opacity: 0;
         }
 
         /* Feature Card */
@@ -244,9 +262,7 @@
         .feature-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 3px;
             background: var(--status-available);
         }
@@ -309,13 +325,8 @@
         }
 
         @media (max-width: 768px) {
-            .code-grid {
-                grid-template-columns: 1fr;
-            }
-
-            header::after {
-                display: none;
-            }
+            .code-grid { grid-template-columns: 1fr; }
+            header::after { display: none; }
         }
 
         .code-block {
@@ -342,14 +353,10 @@
             letter-spacing: 0.05em;
         }
 
-        .code-dots {
-            display: flex;
-            gap: 6px;
-        }
+        .code-dots { display: flex; gap: 6px; }
 
         .code-dot {
-            width: 10px;
-            height: 10px;
+            width: 10px; height: 10px;
             border-radius: 50%;
             background: var(--bg-secondary);
         }
@@ -366,9 +373,7 @@
             color: var(--text-primary);
         }
 
-        code {
-            font-family: inherit;
-        }
+        code { font-family: inherit; }
 
         .comment { color: var(--text-muted); font-style: italic; }
         .keyword { color: var(--accent-pink); }
@@ -411,6 +416,46 @@
             line-height: 1.5;
         }
 
+        /* Back to top */
+        .back-to-top {
+            position: fixed;
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            width: 50px; height: 50px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .back-to-top svg {
+            width: 20px; height: 20px;
+            fill: var(--text-primary);
+            transition: fill 0.3s ease;
+        }
+
+        .back-to-top:hover svg {
+            fill: var(--bg-primary);
+        }
+
         /* Footer */
         footer {
             padding: var(--space-xl) 0;
@@ -430,9 +475,7 @@
             transition: color 0.3s ease;
         }
 
-        .footer-link:hover {
-            color: var(--accent-green);
-        }
+        .footer-link:hover { color: var(--accent-green); }
 
         /* Animations */
         .fade-in {
@@ -442,36 +485,17 @@
         }
 
         @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        .delay-5 { animation-delay: 0.5s; }
 
         /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
-        }
-
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb {
             background: var(--bg-tertiary);
             border-radius: 4px;
         }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -492,68 +516,229 @@
                 <span class="highlight">.NET 10</span>
             </h1>
             <p class="hero-subtitle fade-in delay-2">
-                Exploring new language features in .NET 10, including C# 14 enhancements.
-                Documenting what's available now and what's coming in future releases.
+                Exploring new features in .NET 10, including C# 14 language enhancements
+                and EF Core 10.0 improvements for LINQ and SQL translation.
             </p>
             <div class="hero-meta fade-in delay-3">
-                <div class="meta-item">
+                <a href="#efcore-10" class="meta-item">
+                    <span class="meta-dot available"></span>
+                    <span>EF Core 10: 2 Major Features</span>
+                </a>
+                <a href="#csharp-14" class="meta-item">
                     <span class="meta-dot available"></span>
                     <span>C# 14: 1 Feature Available</span>
-                </div>
-                <div class="meta-item">
+                </a>
+                <a href="#csharp-14-coming" class="meta-item">
                     <span class="meta-dot coming"></span>
-                    <span>7 Features Coming Soon</span>
+                    <span>7 C# 14 Features Coming Soon</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- EF Core 10 Section -->
+        <section id="efcore-10" data-section="efcore">
+            <div class="section-header" onclick="toggleSection('efcore')">
+                <span class="expand-icon" id="icon-efcore">▶</span>
+                <div>
+                    <div class="section-label">01 — EF Core 10.0</div>
+                    <h2 class="section-title">LINQ and SQL Translation Improvements</h2>
+                </div>
+            </div>
+            <div class="section-content" id="content-efcore">
+                <p class="feature-description">
+                    Entity Framework Core 10.0 introduces powerful enhancements for LINQ queries,
+                    including native LeftJoin/RightJoin operators and improved parameterized collection translation.
+                </p>
+
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <h3 class="feature-title">LeftJoin &amp; RightJoin Operators</h3>
+                        <span class="feature-status available">Available</span>
+                    </div>
+                    <p class="feature-description">
+                        First-class LINQ support for LeftJoin and RightJoin methods. EF Core recognizes these methods
+                        and translates them to LEFT JOIN and RIGHT JOIN operations in SQL.
+                    </p>
+
+                    <div class="code-grid">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-label">Old Way</span>
+                                <div class="code-dots">
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre><code><span class="comment">// Complex pattern</span>
+<span class="keyword">var</span> query = context.Students
+    .<span class="type">GroupJoin</span>(context.Departments,
+        student <span class="keyword">=&gt;</span> student.DepartmentID,
+        department <span class="keyword">=&gt;</span> department.ID,
+        (student, depts) <span class="keyword">=&gt;</span> <span class="keyword">new</span> {
+            student, depts })
+    .<span class="type">SelectMany</span>(
+        x <span class="keyword">=&gt;</span> x.depts.<span class="type">DefaultIfEmpty</span>(),
+        (x, dept) <span class="keyword">=&gt;</span> <span class="keyword">new</span> {
+            x.student.FirstName,
+            Department = dept.Name <span class="operator">??</span> <span class="string">"[NONE]"</span>
+        });</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-label">EF Core 10</span>
+                                <div class="code-dots">
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre><code><span class="comment">// Clean syntax</span>
+<span class="keyword">var</span> query = context.Students
+    .<span class="type">LeftJoin</span>(context.Departments,
+        student <span class="keyword">=&gt;</span> student.DepartmentID,
+        department <span class="keyword">=&gt;</span> department.ID,
+        (student, dept) <span class="keyword">=&gt;</span> <span class="keyword">new</span> {
+            student.FirstName,
+            Department = dept.Name
+                <span class="operator">??</span> <span class="string">"[NONE]"</span>
+        });
+
+<span class="comment">// RightJoin available too!</span></code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <h3 class="feature-title">Parameterized Collection Translation</h3>
+                        <span class="feature-status available">Available</span>
+                    </div>
+                    <p class="feature-description">
+                        New default translation strategy for parameterized collections. Each value becomes a scalar
+                        parameter with automatic padding for better query plan reuse.
+                    </p>
+
+                    <div class="code-grid">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-label">EF 8.0</span>
+                                <div class="code-dots">
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre><code><span class="comment">// JSON array</span>
+<span class="keyword">int</span>[] ids = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];
+
+<span class="keyword">var</span> blogs = context.Blogs
+    .<span class="type">Where</span>(b <span class="keyword">=&gt;</span> ids
+        .<span class="type">Contains</span>(b.Id))
+    .<span class="type">ToListAsync</span>();
+
+<span class="comment">-- SQL uses OPENJSON</span>
+<span class="keyword">WHERE</span> [Id] <span class="keyword">IN</span> (
+  <span class="keyword">SELECT</span> [value]
+  <span class="keyword">FROM</span> <span class="type">OPENJSON</span>(@param)
+)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-label">EF Core 10</span>
+                                <div class="code-dots">
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre><code><span class="comment">// Scalar + padding</span>
+<span class="keyword">int</span>[] ids = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];
+
+<span class="keyword">var</span> blogs = context.Blogs
+    .<span class="type">Where</span>(b <span class="keyword">=&gt;</span> ids
+        .<span class="type">Contains</span>(b.Id))
+    .<span class="type">ToListAsync</span>();
+
+<span class="comment">-- Individual params</span>
+<span class="keyword">WHERE</span> [Id] <span class="keyword">IN</span> (
+  @ids1, @ids2, @ids3
+)
+
+<span class="comment">-- 8 values pads to 10</span>
+<span class="keyword">WHERE</span> [Id] <span class="keyword">IN</span> (
+  @ids1, ..., @ids8,
+  @ids9, @ids10
+)</code></pre>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="available">
-            <div class="section-label">01 — C# 14 Available Now</div>
-            <h2 class="section-title fade-in delay-1">nameof with Unbound Generic Types</h2>
-
-            <div class="feature-card fade-in delay-2">
-                <div class="feature-header">
-                    <h3 class="feature-title">Unbound Generic nameof</h3>
-                    <span class="feature-status available">Available</span>
+        <!-- C# 14 Available Section -->
+        <section id="csharp-14" data-section="csharp14">
+            <div class="section-header" onclick="toggleSection('csharp14')">
+                <span class="expand-icon" id="icon-csharp14">▶</span>
+                <div>
+                    <div class="section-label">02 — C# 14 Available Now</div>
+                    <h2 class="section-title">nameof with Unbound Generic Types</h2>
                 </div>
+            </div>
+            <div class="section-content" id="content-csharp14">
                 <p class="feature-description">
                     Use the nameof expression on unbound generic types without specifying type arguments.
-                    This returns the type name with arity, useful for generic type introspection, logging,
-                    and code generation scenarios.
+                    Useful for generic type introspection, logging, and code generation.
                 </p>
 
-                <div class="code-grid">
-                    <div class="code-block">
-                        <div class="code-header">
-                            <span class="code-label">Old Way</span>
-                            <div class="code-dots">
-                                <span class="code-dot"></span>
-                                <span class="code-dot"></span>
-                                <span class="code-dot"></span>
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <h3 class="feature-title">Unbound Generic nameof</h3>
+                        <span class="feature-status available">Available</span>
+                    </div>
+
+                    <div class="code-grid">
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-label">Old Way</span>
+                                <div class="code-dots">
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="code-content">
-                            <pre><code><span class="comment">// Required type arguments</span>
+                            <div class="code-content">
+                                <pre><code><span class="comment">// Required arguments</span>
 <span class="keyword">var</span> name = <span class="keyword">nameof</span>(<span class="type">List</span><span class="operator">&lt;</span><span class="type">int</span><span class="operator">&gt;</span>);
 <span class="comment">// Returns: "List"</span>
 
-<span class="comment">// Or use Type.Name with arity</span>
+<span class="comment">// Or Type.Name</span>
 <span class="keyword">var</span> typeName = <span class="keyword">typeof</span>(<span class="type">List</span><span class="operator">&lt;&gt;</span>).<span class="type">Name</span>;
 <span class="comment">// Returns: "List`1"</span></code></pre>
-                        </div>
-                    </div>
-
-                    <div class="code-block">
-                        <div class="code-header">
-                            <span class="code-label">C# 14</span>
-                            <div class="code-dots">
-                                <span class="code-dot"></span>
-                                <span class="code-dot"></span>
-                                <span class="code-dot"></span>
                             </div>
                         </div>
-                        <div class="code-content">
-                            <pre><code><span class="comment">// nameof on unbound generics</span>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-label">C# 14</span>
+                                <div class="code-dots">
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                    <span class="code-dot"></span>
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre><code><span class="comment">// nameof on unbound</span>
 <span class="keyword">var</span> listName = <span class="keyword">nameof</span>(<span class="type">List</span><span class="operator">&lt;&gt;</span>);
 <span class="comment">// Returns: "List`1"</span>
 
@@ -562,48 +747,57 @@
 
 <span class="keyword">var</span> funcName = <span class="keyword">nameof</span>(<span class="type">Func</span><span class="operator">&lt;,,&gt;</span>);
 <span class="comment">// Returns: "Func`3"</span></code></pre>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="coming-soon">
-            <div class="section-label">02 — C# 14 Coming Soon</div>
-            <h2 class="section-title fade-in delay-1">Upcoming C# 14 Features</h2>
-            <p class="feature-description fade-in delay-2">
-                The following C# 14 features are proposed but not yet implemented in .NET 10.
-                These are expected to ship with .NET 11 / C# 14 final release.
-            </p>
+        <!-- C# 14 Coming Soon Section -->
+        <section id="csharp-14-coming" data-section="csharp14-coming">
+            <div class="section-header" onclick="toggleSection('csharp14-coming')">
+                <span class="expand-icon" id="icon-csharp14-coming">▶</span>
+                <div>
+                    <div class="section-label">03 — C# 14 Coming Soon</div>
+                    <h2 class="section-title">Upcoming C# 14 Features</h2>
+                </div>
+            </div>
+            <div class="section-content collapsed" id="content-csharp14-coming">
+                <p class="feature-description">
+                    The following C# 14 features are proposed but not yet implemented in .NET 10.
+                    These are expected to ship with .NET 11 / C# 14 final release.
+                </p>
 
-            <div class="features-list fade-in delay-3">
-                <div class="feature-item">
-                    <div class="feature-item-name">field keyword</div>
-                    <div class="feature-item-desc">Access compiler-generated backing fields directly in custom property accessors</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-item-name">?.= operator</div>
-                    <div class="feature-item-desc">Null-conditional assignment operator for concise null handling</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-item-name">Lambda parameter modifiers</div>
-                    <div class="feature-item-desc">Use ref, in, out modifiers in lambdas without explicit parameter types</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-item-name">Custom ++, -- operators</div>
-                    <div class="feature-item-desc">User-defined increment and decrement operator behavior</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-item-name">Custom +=, -= operators</div>
-                    <div class="feature-item-desc">User-defined compound assignment operators for performance optimization</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-item-name">Extension blocks</div>
-                    <div class="feature-item-desc">Static extension methods and extension properties for types</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-item-name">Partial constructors/events</div>
-                    <div class="feature-item-desc">Partial instance constructors and events for better source generator support</div>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <div class="feature-item-name">field keyword</div>
+                        <div class="feature-item-desc">Access compiler-generated backing fields directly in custom property accessors</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-item-name">?.= operator</div>
+                        <div class="feature-item-desc">Null-conditional assignment operator for concise null handling</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-item-name">Lambda parameter modifiers</div>
+                        <div class="feature-item-desc">Use ref, in, out modifiers in lambdas without explicit parameter types</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-item-name">Custom ++, -- operators</div>
+                        <div class="feature-item-desc">User-defined increment and decrement operator behavior</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-item-name">Custom +=, -= operators</div>
+                        <div class="feature-item-desc">User-defined compound assignment operators for performance optimization</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-item-name">Extension blocks</div>
+                        <div class="feature-item-desc">Static extension methods and extension properties for types</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-item-name">Partial constructors/events</div>
+                        <div class="feature-item-desc">Partial instance constructors and events for better source generator support</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -611,40 +805,79 @@
         <footer>
             <p class="footer-text">
                 Part of the <span style="color: var(--accent-blue);">What's New in .NET 10</span> project ·
-                Exploring C# 14 Language Features
+                Exploring C# 14 and EF Core 10.0 Features
             </p>
             <p class="footer-text" style="margin-top: 1rem; color: var(--text-secondary);">
-                Created by Nasif Ishtiaque Islam ·
+                Created by <a href="https://www.linkedin.com/in/oii-nasif/" class="footer-link" target="_blank">Nasif Ishtiaque Islam</a> ·
                 <a href="https://github.com/dotnet/csharplang" class="footer-link" target="_blank">C# Language Design</a> ·
-                <a href="https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-10" class="footer-link" target="_blank">.NET 10 Docs</a>
+                <a href="https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-10" class="footer-link" target="_blank">.NET 10 Docs</a> ·
+                <a href="https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-10.0/whatsnew" class="footer-link" target="_blank">EF Core 10 Docs</a>
             </p>
         </footer>
     </div>
 
+    <!-- Back to Top Button -->
+    <div class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4l-8 8h5v8h6v-8h5z"/>
+        </svg>
+    </div>
+
     <script>
-        // Scroll-triggered animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animationPlayState = 'running';
+        // Toggle section expand/collapse
+        function toggleSection(sectionId) {
+            const content = document.getElementById('content-' + sectionId);
+            const icon = document.getElementById('icon-' + sectionId);
+
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('expanded');
+        }
+
+        // Expand all sections
+        function expandAll() {
+            document.querySelectorAll('.section-content').forEach(content => {
+                content.classList.remove('collapsed');
+            });
+            document.querySelectorAll('.expand-icon').forEach(icon => {
+                icon.classList.add('expanded');
+            });
+        }
+
+        // Collapse all sections
+        function collapseAll() {
+            document.querySelectorAll('.section-content').forEach((content, index) => {
+                // Don't collapse first section
+                if (index > 0) {
+                    content.classList.add('collapsed');
                 }
             });
-        }, { threshold: 0.1 });
+            document.querySelectorAll('.expand-icon').forEach((icon, index) => {
+                if (index > 0) {
+                    icon.classList.remove('expanded');
+                }
+            });
+        }
 
-        document.querySelectorAll('.fade-in').forEach(el => {
-            el.style.animationPlayState = 'paused';
-            observer.observe(el);
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', () => {
+            const backToTop = document.getElementById('backToTop');
+            if (window.scrollY > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
         });
 
-        // Smooth scroll for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
+        // Initialize: expand first section, collapse others
+        document.addEventListener('DOMContentLoaded', () => {
+            // EF Core section expanded by default
+            document.getElementById('icon-efcore').classList.add('expanded');
+            document.getElementById('content-csharp14').classList.add('collapsed');
         });
     </script>
 </body>
