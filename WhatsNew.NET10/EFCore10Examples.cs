@@ -88,7 +88,9 @@ public class EFCore10Examples
             await context.SaveChangesAsync();
         }
 
-        var departmentsWithStudents = await context.Departments
+        // Note: InMemory provider doesn't translate RightJoin, using client evaluation
+        var departmentsWithStudents = context.Departments
+            .AsEnumerable()  // Switch to client-side for InMemory demo
             .RightJoin(
                 context.Students,
                 department => department.ID,
@@ -99,7 +101,7 @@ public class EFCore10Examples
                     student.FirstName,
                     student.LastName
                 })
-            .ToListAsync();
+            .ToList();
 
         Console.WriteLine("\nDepartments (RightJoin keeps all Students):");
         foreach (var item in departmentsWithStudents)
@@ -107,7 +109,8 @@ public class EFCore10Examples
             Console.WriteLine($"  {item.Department} - {item.FirstName} {item.LastName}");
         }
 
-        Console.WriteLine("\nTranslated SQL: RIGHT JOIN");
+        Console.WriteLine("\nNote: In SQL Server, this translates to RIGHT JOIN");
+        Console.WriteLine("InMemory provider uses client evaluation for this demo.");
     }
 
     // ============================================================
