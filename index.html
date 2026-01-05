@@ -480,9 +480,19 @@
         /* Animations */
         .fade-in {
             opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.6s ease forwards;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
         }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-delay-1 { transition-delay: 0.1s; }
+        .fade-in-delay-2 { transition-delay: 0.2s; }
+        .fade-in-delay-3 { transition-delay: 0.3s; }
+        .fade-in-delay-4 { transition-delay: 0.4s; }
 
         @keyframes fadeIn {
             to { opacity: 1; transform: translateY(0); }
@@ -530,7 +540,7 @@
                 </a>
                 <a href="#csharp-14-coming" class="meta-item">
                     <span class="meta-dot coming"></span>
-                    <span>7 C# 14 Features Coming Soon</span>
+                    <span>8 C# 14 Features Coming Soon</span>
                 </a>
             </div>
         </section>
@@ -550,7 +560,7 @@
                     including native LeftJoin/RightJoin operators and improved parameterized collection translation.
                 </p>
 
-                <div class="feature-card">
+                <div class="feature-card fade-in">
                     <div class="feature-header">
                         <h3 class="feature-title">LeftJoin &amp; RightJoin Operators</h3>
                         <span class="feature-status available">Available</span>
@@ -614,7 +624,7 @@
                     </div>
                 </div>
 
-                <div class="feature-card">
+                <div class="feature-card fade-in fade-in-delay-1">
                     <div class="feature-header">
                         <h3 class="feature-title">Parameterized Collection Translation</h3>
                         <span class="feature-status available">Available</span>
@@ -701,9 +711,9 @@
                     Useful for generic type introspection, logging, and code generation.
                 </p>
 
-                <div class="feature-card">
+                <div class="feature-card fade-in">
                     <div class="feature-header">
-                        <h3 class="feature-title">Unbound Generic nameof</h3>
+                        <h3 class="feature-title">nameof with Unbound Generic Types</h3>
                         <span class="feature-status available">Available</span>
                     </div>
 
@@ -770,33 +780,37 @@
                 </p>
 
                 <div class="features-list">
-                    <div class="feature-item">
+                    <div class="feature-item fade-in">
                         <div class="feature-item-name">field keyword</div>
                         <div class="feature-item-desc">Access compiler-generated backing fields directly in custom property accessors</div>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item fade-in fade-in-delay-1">
                         <div class="feature-item-name">?.= operator</div>
                         <div class="feature-item-desc">Null-conditional assignment operator for concise null handling</div>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item fade-in fade-in-delay-2">
                         <div class="feature-item-name">Lambda parameter modifiers</div>
                         <div class="feature-item-desc">Use ref, in, out modifiers in lambdas without explicit parameter types</div>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item fade-in fade-in-delay-3">
                         <div class="feature-item-name">Custom ++, -- operators</div>
                         <div class="feature-item-desc">User-defined increment and decrement operator behavior</div>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item fade-in fade-in-delay-4">
                         <div class="feature-item-name">Custom +=, -= operators</div>
                         <div class="feature-item-desc">User-defined compound assignment operators for performance optimization</div>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item fade-in fade-in-delay-1">
                         <div class="feature-item-name">Extension blocks</div>
                         <div class="feature-item-desc">Static extension methods and extension properties for types</div>
                     </div>
-                    <div class="feature-item">
+                    <div class="feature-item fade-in fade-in-delay-2">
                         <div class="feature-item-name">Partial constructors/events</div>
                         <div class="feature-item-desc">Partial instance constructors and events for better source generator support</div>
+                    </div>
+                    <div class="feature-item fade-in fade-in-delay-3">
+                        <div class="feature-item-name">Pipe Operator (|)</div>
+                        <div class="feature-item-desc">Chain functions in a linear pipeline using extension blocks and custom operator overloading</div>
                     </div>
                 </div>
             </div>
@@ -808,10 +822,7 @@
                 Exploring C# 14 and EF Core 10.0 Features
             </p>
             <p class="footer-text" style="margin-top: 1rem; color: var(--text-secondary);">
-                Created by <a href="https://www.linkedin.com/in/oii-nasif/" class="footer-link" target="_blank">Nasif Ishtiaque Islam</a> ·
-                <a href="https://github.com/dotnet/csharplang" class="footer-link" target="_blank">C# Language Design</a> ·
-                <a href="https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-10" class="footer-link" target="_blank">.NET 10 Docs</a> ·
-                <a href="https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-10.0/whatsnew" class="footer-link" target="_blank">EF Core 10 Docs</a>
+                Created by <a href="https://www.linkedin.com/in/oii-nasif/" class="footer-link" target="_blank">Nasif Ishtiaque Islam</a>
             </p>
         </footer>
     </div>
@@ -878,7 +889,34 @@
             // EF Core section expanded by default
             document.getElementById('icon-efcore').classList.add('expanded');
             document.getElementById('content-csharp14').classList.add('collapsed');
+
+            // Setup Intersection Observer for scroll animations
+            setupScrollAnimations();
         });
+
+        // Scroll-triggered animations using Intersection Observer
+        function setupScrollAnimations() {
+            const observerOptions = {
+                root: null, // viewport
+                rootMargin: '0px',
+                threshold: 0.1 // trigger when 10% visible
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // Optional: stop observing once animated
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all elements with fade-in class
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
     </script>
 </body>
 </html>
