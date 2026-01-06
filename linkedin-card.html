@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EF Core 10 Parameterized Collections - LinkedIn Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #11111a;
+            --bg-tertiary: #1a1a24;
+            --bg-code: #0d0d14;
+            --accent-blue: #5fb3d9;
+            --accent-green: #9ecd6f;
+            --accent-orange: #dbb872;
+            --accent-pink: #d4a5e5;
+            --accent-red: #e06c75;
+            --text-primary: #e0e0e8;
+            --text-secondary: #8b8b9e;
+            --text-muted: #5a5a6a;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-code: rgba(95, 179, 217, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Newsreader', Georgia, serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card {
+            width: 1080px;
+            height: 1080px;
+            background: var(--bg-primary);
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Grid background */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(var(--border-subtle) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .header::after {
+            content: '.NET10';
+            position: absolute;
+            right: 100px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 6rem;
+            font-weight: 600;
+            color: var(--bg-tertiary);
+            opacity: 0.2;
+            pointer-events: none;
+            letter-spacing: -0.05em;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-dot {
+            width: 8px; height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+        }
+
+        .version-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
+
+        /* Title section */
+        .title-section {
+            margin-bottom: 20px;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent-green);
+            margin-bottom: 8px;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 400;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .main-title .highlight {
+            color: var(--accent-blue);
+            font-style: italic;
+        }
+
+        /* Feature description */
+        .feature-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            max-width: 900px;
+            line-height: 1.5;
+        }
+
+        /* Code comparison */
+        .code-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            flex-grow: 1;
+        }
+
+        .code-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 18px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .code-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+        }
+
+        .code-dots { display: flex; gap: 7px; }
+
+        .code-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+        }
+
+        .code-content {
+            padding: 18px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        code { font-family: inherit; }
+
+        .comment { color: var(--text-muted); font-style: italic; }
+        .keyword { color: var(--accent-pink); }
+        .type { color: var(--accent-blue); }
+        .string { color: var(--accent-green); }
+        .number { color: var(--accent-orange); }
+        .operator { color: var(--accent-red); }
+
+        /* Benefits box */
+        .benefits-box {
+            background: rgba(159, 205, 111, 0.1);
+            border: 1px solid rgba(159, 205, 111, 0.3);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .benefits-title {
+            color: var(--accent-green);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .footer-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+            background: rgba(95, 179, 217, 0.15);
+            border: 1px solid rgba(95, 179, 217, 0.4);
+            border-radius: 6px;
+            padding: 4px 12px;
+        }
+
+        .highlight-box {
+            background: rgba(159, 205, 111, 0.1);
+            border: 1px solid rgba(159, 205, 111, 0.3);
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="content">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">
+                    <span class="logo-dot"></span>
+                    <span>WhatsNew.NET10</span>
+                </div>
+                <span class="version-badge">.NET 10 SDK 10.0.101</span>
+            </div>
+
+            <!-- Title -->
+            <div class="title-section">
+                <div class="section-label">EF Core 10.0</div>
+                <h1 class="main-title">
+                    New <span class="highlight">Parameterized</span> Collection Translation
+                </h1>
+            </div>
+
+            <!-- Description -->
+            <p class="feature-desc">
+                EF Core 10 introduces a smarter translation strategy for parameterized collections.
+                Each value becomes a scalar parameter with automatic padding for better query plan reuse.
+            </p>
+
+            <!-- Code Comparison -->
+            <div class="code-comparison">
+                <div class="code-panel">
+                    <div class="code-panel-header">
+                        <span class="code-label">EF Core 8/9</span>
+                        <div class="code-dots">
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                        </div>
+                    </div>
+                    <div class="code-content">
+                        <pre><code><span class="comment">// JSON array translation</span>
+<span class="keyword">int</span>[] ids = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];
+
+<span class="keyword">var</span> blogs = context.Blogs
+    .<span class="type">Where</span>(b <span class="keyword">=&gt;</span> ids
+        .<span class="type">Contains</span>(b.Id))
+    .<span class="type">ToListAsync</span>();
+
+<span class="comment">-- SQL: OPENJSON (complex)</span>
+<span class="keyword">WHERE</span> [Id] <span class="keyword">IN</span> (
+  <span class="type">OPENJSON</span>(@p0)
+);</code></pre>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-panel-header">
+                        <span class="code-label">EF Core 10</span>
+                        <div class="code-dots">
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                        </div>
+                    </div>
+                    <div class="code-content">
+                        <pre><code><span class="comment">// Scalar parameters</span>
+<span class="keyword">int</span>[] ids = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];
+
+<span class="keyword">var</span> blogs = context.Blogs
+    .<span class="type">Where</span>(b <span class="keyword">=&gt;</span> ids
+        .<span class="type">Contains</span>(b.Id))
+    .<span class="type">ToListAsync</span>();
+
+<span class="comment">-- SQL: Individual params</span>
+<span class="keyword">WHERE</span> [Id] <span class="keyword">IN</span> (
+  @p1, @p2, @p3
+);
+
+<span class="comment">-- 8 values? Pad to 10!</span>
+<span class="keyword">WHERE</span> [Id] <span class="keyword">IN</span> (
+  @p1, ..., @p8,
+  @p9, @p10
+);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefits -->
+            <div class="benefits-box">
+                <div class="benefits-title">Benefits:</div>
+                • Better query plan reuse (cache efficiency)<br>
+                • Same SQL structure for different collection sizes<br>
+                • Cardinality info preserved for query optimizer<br>
+                • Configurable: Parameter, Constant, or JsonArray
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <span class="footer-text">Explore more at <a href="https://oii-nasif.github.io/WhatsNew.NET10/" class="footer-link">oii-nasif.github.io/WhatsNew.NET10</a></span>
+                <div class="highlight-box">Available Now in .NET 10</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
